@@ -11,7 +11,7 @@ export default function Home() {
         transition={{ duration: 1 }}
         className="text-5xl font-bold mb-4"
       >
-        Hi, I'm Dalyn Small
+        Hi, I&apos;m Dalyn
       </motion.h1>
 
       <motion.p
