@@ -1,7 +1,7 @@
 'use client';
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 
 export default function Home() {
@@ -12,23 +12,37 @@ export default function Home() {
   const [showDetails, setShowDetails] = useState(false);
   const [activeTab, setActiveTab] = useState('experience');
 
+  const handleLogoClick = () => {
+    setShowDetails(!showDetails);
+  };
+
+  // Skip intro function
+  const handleSkipIntro = useCallback(() => {
+    setShowText(false);
+    setShowDescription(false);
+    setHideDescription(true);
+    setShowExperience(true);
+  }, []);
+
   useEffect(() => {
     const timer = setTimeout(() => setShowText(false), 4000);
     const descriptionTimer = setTimeout(() => setShowDescription(true), 5000);
     const hideDescriptionTimer = setTimeout(() => setHideDescription(true), 13000);
     const experienceTimer = setTimeout(() => setShowExperience(true), 14000);
 
+    const skipListener = () => handleSkipIntro();
+    window.addEventListener('keydown', skipListener);
+    window.addEventListener('click', skipListener);
+
     return () => {
       clearTimeout(timer);
       clearTimeout(descriptionTimer);
       clearTimeout(hideDescriptionTimer);
       clearTimeout(experienceTimer);
+      window.removeEventListener('keydown', skipListener);
+      window.removeEventListener('click', skipListener);
     };
-  }, []);
-
-  const handleLogoClick = () => {
-    setShowDetails(!showDetails);
-  };
+  }, [handleSkipIntro]);
 
   const experienceData = [
     {
@@ -83,65 +97,62 @@ export default function Home() {
   return (
     <main className="flex flex-col items-center justify-start min-h-screen bg-black text-white px-4 sm:px-8 pt-12">
       <AnimatePresence>
-      <AnimatePresence>
-  {showText && (
-    <motion.div
-      key="intro"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 1 }}
-      className="fixed inset-0 flex flex-col items-center justify-center bg-black z-50"
-    >
-      <motion.h1
-        initial={{ opacity: 0, y: -50 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: 50 }}
-        transition={{ duration: 1 }}
-        className="text-5xl font-bold mb-4"
-      >
-        Hello, I&apos;m Dalyn
-      </motion.h1>
+        {showText && (
+          <motion.div
+            key="intro"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1 }}
+            className="fixed inset-0 flex flex-col items-center justify-center bg-black z-50"
+          >
+            <motion.h1
+              initial={{ opacity: 0, y: -50 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 50 }}
+              transition={{ duration: 1 }}
+              className="text-5xl font-bold mb-4"
+            >
+              Hello, I&apos;m Dalyn
+            </motion.h1>
 
-      <motion.p
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0, y: 50 }}
-        transition={{ delay: 0.5, duration: 1 }}
-        className="text-xl"
-      >
-        Backend Engineer | Fullstack Developer
-      </motion.p>
-    </motion.div>
-  )}
-</AnimatePresence>
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0, y: 50 }}
+              transition={{ delay: 0.5, duration: 1 }}
+              className="text-xl"
+            >
+              Backend Engineer | Fullstack Developer
+            </motion.p>
+          </motion.div>
+        )}
 
-{showDescription && !hideDescription && (
-  <motion.div
-    key="description-wrapper"
-    className="fixed inset-0 flex items-center justify-center"
-    initial={{ opacity: 0 }}
-    animate={{ opacity: 1 }}
-    exit={{ opacity: 0 }}
-    transition={{ duration: 1 }}
-  >
-    <motion.p
-      key="description"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: 50 }}
-      transition={{ delay: 0.5, duration: 1 }}
-      className="text-xl text-center max-w-2xl text-white"
-    >
-      I specialize in building scalable backend systems and full-stack applications, focusing on clean architecture and performance.
-    </motion.p>
-  </motion.div>
-)}
+        {showDescription && !hideDescription && (
+          <motion.div
+            key="description-wrapper"
+            className="fixed inset-0 flex items-center justify-center"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1 }}
+          >
+            <motion.p
+              key="description"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 50 }}
+              transition={{ delay: 0.5, duration: 1 }}
+              className="text-xl text-center max-w-2xl text-white"
+            >
+              I specialize in building scalable backend systems and full-stack applications, focusing on clean architecture and performance.
+            </motion.p>
+          </motion.div>
+        )}
       </AnimatePresence>
 
       {showExperience && (
         <>
-          {/* Tabs (Fixed under intro section) */}
           <div className="flex space-x-8 mt-20 border-b border-white/10">
             {['experience', 'projects', 'contact'].map((tab) => (
               <button
@@ -158,7 +169,6 @@ export default function Home() {
             ))}
           </div>
 
-          {/* Tab content with smooth transition */}
           <div className="relative mt-12 w-full max-w-5xl min-h-[300px]">
             <AnimatePresence mode="wait">
               {activeTab === 'experience' && (
