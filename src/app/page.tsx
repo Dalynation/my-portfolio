@@ -119,8 +119,8 @@ export default function Home() {
             <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              exit={{ opacity: 0, y: 50 }}
-              transition={{ delay: 0.5, duration: 1 }}
+              exit={{ opacity: 0, y: 50 }} // remove delay here
+              transition={{ duration: 1 }} // match duration with h1
               className="text-xl"
             >
               Backend Engineer | Fullstack Developer
